@@ -1,0 +1,16 @@
+﻿ID,User story,Responsable,Priorité,Points indicatifs,Sprint relatif,Critère acceptation
+DK-01,Créer et publier une offre,Rayen,P0,5,S1,Projet validé et brouillon privé
+DK-02,Rechercher et filtrer les offres,Rayen,P0,3,S1,Offres ouvertes avec pagination
+DK-03,Déposer et retirer une proposition,Rana,P0,5,S2,Une proposition active par couple
+DK-04,Attribuer une proposition unique,Rana,P0,8,S2,Un gagnant sous concurrence
+DK-05,Livrer et approuver les jalons,Yassin,P0,8,S2,Transitions et litiges vérifiés
+DK-06,Échanger dans un fil privé,Farah,P0,5,S3,Tiers refusé et historique durable
+DK-07,Recevoir des notifications fiables,Oussama,P0,5,S3,Replay sans doublon; reprise DLQ
+DK-08,Importer et extraire le CV privé,Ayoub,P0,8,S1,PDF/DOCX contrôlé; statut suivi; suggestions privées
+DK-09,Confirmer le préremplissage,Ayoub,P0,5,S2,Aucun effet avant validation; conflit de version 409
+DK-10,Supprimer le CV et les extractions,Ayoub,P0,5,S2,Worker tardif incapable de recréer les données
+DK-11,Matcher le profil confirmé avec les offres,Ayoub,P1,8,S4,Score expliqué et versions tracées
+DK-12,Mettre en place OIDC et comptes,Toute l’équipe,P0,8,S1,Socle commun hors décompte
+DK-13,Tester reprises et autorisations,Toute l’équipe,P0,8,S2–S3,Scénarios T01 à T15
+DK-14,Éditer le profil professionnel et le portfolio,Ayoub,P0,8,S1,Profil privé par défaut et version optimiste
+DK-15,Relier le backend au moteur IA privé,Ayoub,P0,5,S3,Aucun appel frontend IA et panne traitée côté backend

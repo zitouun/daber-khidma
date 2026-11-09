@@ -1,0 +1,1037 @@
+[
+  {
+    "key": "identity-profile",
+    "name": "Authentification et comptes",
+    "owner": "Toute l’équipe — délégué oral : Ayoub",
+    "db": "identity",
+    "purpose": "Relier les comptes métier au fournisseur OIDC, gérer l’état des comptes, les rôles et les coordonnées privées. Le profil professionnel ne relève plus du socle commun : il appartient au service métier 6 d’Ayoub.",
+    "classes": [
+      [
+        "UserAccount",
+        [
+          "id: UUID",
+          "oidcSubject: String UNIQUE",
+          "handle: String",
+          "email: String privé",
+          "emailVerified: boolean",
+          "status: AccountStatus"
+        ],
+        [
+          "updateHandle()",
+          "suspend()"
+        ]
+      ],
+      [
+        "RoleAssignment",
+        [
+          "userId: UUID",
+          "role: Role"
+        ],
+        []
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "1..*"
+      ]
+    ],
+    "sync": "Le service d’Ayoub vérifie le compte actif avec GET /users/me; Notification récupère uniquement le contact privé autorisé par API interne.",
+    "event": "account.updated.v1",
+    "consumer": "Service métier 6 et Notification",
+    "routes": [
+      [
+        "get",
+        "/users/me",
+        "Lire mon compte et mes rôles",
+        "Account",
+        null,
+        "200"
+      ],
+      [
+        "patch",
+        "/users/me",
+        "Modifier le pseudonyme du compte",
+        "Account",
+        "AccountInput",
+        "200"
+      ],
+      [
+        "get",
+        "/internal/users/{id}/delivery-contact",
+        "Fournir les coordonnées au worker Notification autorisé",
+        "DeliveryContact",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/users/{id}/suspend",
+        "Suspendre un compte — administrateur uniquement",
+        "Account",
+        null,
+        "200"
+      ]
+    ],
+    "diagram": "03_Classes_identity-profile",
+    "scope": "socle_commun_hors_decompte",
+    "businessNumber": null
+  },
+  {
+    "key": "project-catalog",
+    "name": "Catalogue de projets",
+    "owner": "Rayen",
+    "db": "catalog",
+    "purpose": "Gérer les projets, la recherche et la réservation atomique de l’unique attribution. Posséder la décision de disponibilité évite une course entre annulation et sélection.",
+    "classes": [
+      [
+        "Project",
+        [
+          "id: UUID",
+          "clientId: UUID externe",
+          "title: String",
+          "description: String",
+          "budgetMin: Decimal",
+          "budgetMax: Decimal",
+          "currency: String",
+          "status: ProjectStatus",
+          "version: long"
+        ],
+        [
+          "publish()",
+          "reserveAward(key)",
+          "confirmContract(id)"
+        ]
+      ],
+      [
+        "ProjectSkill",
+        [
+          "projectId: UUID",
+          "skillCode: String externe",
+          "weight: int"
+        ],
+        []
+      ],
+      [
+        "Category",
+        [
+          "id: UUID",
+          "label: String"
+        ],
+        []
+      ],
+      [
+        "AwardReservation",
+        [
+          "projectId: UUID UNIQUE",
+          "proposalId: UUID externe",
+          "reservationKey: UUID UNIQUE",
+          "status: ReservationStatus"
+        ],
+        [
+          "reconcile()"
+        ]
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "0..*"
+      ],
+      [
+        2,
+        0,
+        "1",
+        "0..*"
+      ],
+      [
+        0,
+        3,
+        "1",
+        "0..1"
+      ]
+    ],
+    "sync": "Proposal appelle POST /internal/projects/{id}/award-reservations avec une identité de service et une clé stable.",
+    "event": "project.published.v1",
+    "consumer": "Profil professionnel, CV et matching et Notification",
+    "routes": [
+      [
+        "post",
+        "/projects",
+        "Créer un brouillon",
+        "Project",
+        "ProjectInput",
+        "201"
+      ],
+      [
+        "get",
+        "/projects",
+        "Rechercher les projets ouverts",
+        "ProjectPage",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/projects/{id}",
+        "Lire un projet visible",
+        "Project",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/projects/{id}/publish",
+        "Publier son projet",
+        "Project",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/projects/{id}/cancel",
+        "Annuler avant réservation",
+        "Project",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/internal/projects/{id}/award-reservations",
+        "Réserver une attribution de manière idempotente",
+        "Reservation",
+        "ReservationInput",
+        "200"
+      ]
+    ],
+    "diagram": "04_Classes_project-catalog",
+    "scope": "microservice_metier",
+    "businessNumber": 1
+  },
+  {
+    "key": "proposal-selection",
+    "name": "Propositions et sélection",
+    "owner": "Rana",
+    "db": "proposal",
+    "purpose": "Créer et retirer les propositions, présélectionner et orchestrer l’attribution après réservation du projet.",
+    "classes": [
+      [
+        "Proposal",
+        [
+          "id: UUID",
+          "projectId: UUID externe",
+          "freelancerId: UUID externe",
+          "amount: Decimal",
+          "currency: String",
+          "status: ProposalStatus"
+        ],
+        [
+          "shortlist()",
+          "withdraw()",
+          "accept()"
+        ]
+      ],
+      [
+        "ProposalVersion",
+        [
+          "id: UUID",
+          "proposalId: UUID",
+          "version: int",
+          "coverLetter: String"
+        ],
+        []
+      ],
+      [
+        "Selection",
+        [
+          "projectId: UUID UNIQUE",
+          "proposalId: UUID UNIQUE",
+          "reservationKey: UUID UNIQUE",
+          "status: SelectionStatus"
+        ],
+        [
+          "markPending()",
+          "activate(contractId)"
+        ]
+      ],
+      [
+        "OutboxEvent",
+        [
+          "eventId: UUID",
+          "type: String",
+          "payload: JSON",
+          "publishedAt: Instant nullable"
+        ],
+        [
+          "publish()"
+        ]
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "1..*"
+      ],
+      [
+        0,
+        2,
+        "1",
+        "0..1"
+      ]
+    ],
+    "sync": "Vérifie le projet et son propriétaire dans Catalog; réserve l’attribution avant le commit local de Selection et OutboxEvent.",
+    "event": "proposal.accepted.v1",
+    "consumer": "Engagement",
+    "routes": [
+      [
+        "post",
+        "/projects/{id}/proposals",
+        "Déposer une proposition",
+        "Proposal",
+        "ProposalInput",
+        "201"
+      ],
+      [
+        "get",
+        "/projects/{id}/proposals",
+        "Consulter les propositions autorisées",
+        "ProposalPage",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/proposals/{id}/shortlist",
+        "Présélectionner",
+        "Proposal",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/proposals/{id}/withdraw",
+        "Retirer sa proposition",
+        "Proposal",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/proposals/{id}/accept",
+        "Lancer une attribution idempotente",
+        "Selection",
+        null,
+        "202"
+      ],
+      [
+        "get",
+        "/selections/{id}",
+        "Suivre la création du contrat",
+        "Selection",
+        null,
+        "200"
+      ]
+    ],
+    "diagram": "05_Classes_proposal-selection",
+    "scope": "microservice_metier",
+    "businessNumber": 2
+  },
+  {
+    "key": "engagement",
+    "name": "Contrats et jalons",
+    "owner": "Yassin",
+    "db": "engagement",
+    "purpose": "Créer un contrat par proposition retenue, gérer les jalons, livrables et litiges. Les paiements restent hors périmètre.",
+    "classes": [
+      [
+        "Contract",
+        [
+          "id: UUID",
+          "proposalId: UUID externe UNIQUE",
+          "projectId: UUID externe",
+          "clientId: UUID externe",
+          "freelancerId: UUID externe",
+          "status: ContractStatus"
+        ],
+        [
+          "complete()",
+          "openDispute()"
+        ]
+      ],
+      [
+        "Milestone",
+        [
+          "id: UUID",
+          "contractId: UUID",
+          "title: String",
+          "amount: Decimal",
+          "currency: String",
+          "status: MilestoneStatus"
+        ],
+        [
+          "submit()",
+          "approve()",
+          "requestRevision()"
+        ]
+      ],
+      [
+        "Deliverable",
+        [
+          "id: UUID",
+          "milestoneId: UUID",
+          "objectKey: String",
+          "revision: int",
+          "scanStatus: ScanStatus"
+        ],
+        []
+      ],
+      [
+        "Dispute",
+        [
+          "id: UUID",
+          "contractId: UUID",
+          "reason: String",
+          "status: DisputeStatus",
+          "resolution: String nullable"
+        ],
+        [
+          "resolve()"
+        ]
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "0..*"
+      ],
+      [
+        1,
+        2,
+        "1",
+        "0..*"
+      ],
+      [
+        0,
+        3,
+        "1",
+        "0..*"
+      ]
+    ],
+    "sync": "Communication appelle GET /contracts/{id} pour vérifier les participants; Engagement lit le stockage objet pour valider les métadonnées d’un livrable.",
+    "event": "contract.created.v1 / milestone.approved.v1",
+    "consumer": "Catalogue, Proposal, Communication et Notification selon routage",
+    "routes": [
+      [
+        "get",
+        "/contracts/{id}",
+        "Lire son contrat",
+        "Contract",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/contracts/{id}/milestones",
+        "Créer un jalon",
+        "Milestone",
+        "MilestoneInput",
+        "201"
+      ],
+      [
+        "post",
+        "/milestones/{id}/submit",
+        "Soumettre les métadonnées du livrable",
+        "Milestone",
+        "DeliverableInput",
+        "200"
+      ],
+      [
+        "post",
+        "/milestones/{id}/approve",
+        "Approuver un livrable",
+        "Milestone",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/milestones/{id}/request-revision",
+        "Demander une révision",
+        "Milestone",
+        "ReasonInput",
+        "200"
+      ],
+      [
+        "post",
+        "/contracts/{id}/disputes",
+        "Ouvrir un litige",
+        "Dispute",
+        "ReasonInput",
+        "201"
+      ],
+      [
+        "post",
+        "/milestones/{id}/start",
+        "Démarrer un jalon planifié",
+        "Milestone",
+        null,
+        "200"
+      ]
+    ],
+    "diagram": "06_Classes_engagement",
+    "scope": "microservice_metier",
+    "businessNumber": 3
+  },
+  {
+    "key": "communication",
+    "name": "Communication",
+    "owner": "Farah",
+    "db": "communication",
+    "purpose": "Conserver les conversations et messages, vérifier les participants, limiter les abus et référencer les fichiers.",
+    "classes": [
+      [
+        "Conversation",
+        [
+          "id: UUID",
+          "contractId: UUID externe UNIQUE",
+          "createdAt: Instant"
+        ],
+        [
+          "authorize(userId)"
+        ]
+      ],
+      [
+        "Participant",
+        [
+          "conversationId: UUID",
+          "userId: UUID externe",
+          "joinedAt: Instant"
+        ],
+        []
+      ],
+      [
+        "Message",
+        [
+          "id: UUID",
+          "conversationId: UUID",
+          "senderId: UUID externe",
+          "body: String",
+          "createdAt: Instant"
+        ],
+        [
+          "send()"
+        ]
+      ],
+      [
+        "Attachment",
+        [
+          "id: UUID",
+          "messageId: UUID",
+          "objectKey: String",
+          "mimeType: String",
+          "sizeBytes: long"
+        ],
+        []
+      ],
+      [
+        "ReadReceipt",
+        [
+          "messageId: UUID",
+          "userId: UUID externe",
+          "readAt: Instant"
+        ],
+        []
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "2..*"
+      ],
+      [
+        0,
+        2,
+        "1",
+        "0..*"
+      ],
+      [
+        2,
+        3,
+        "1",
+        "0..*"
+      ],
+      [
+        2,
+        4,
+        "1",
+        "0..*"
+      ]
+    ],
+    "sync": "Lit les participants du contrat par GET /contracts/{id} lors de l’ouverture; contrôle leur appartenance à chaque lecture/écriture.",
+    "event": "message.sent.v1",
+    "consumer": "Notification",
+    "routes": [
+      [
+        "get",
+        "/conversations",
+        "Lister mes conversations",
+        "ConversationPage",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/conversations/{id}/messages",
+        "Historique paginé",
+        "MessagePage",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/conversations/{id}/messages",
+        "Envoyer un message",
+        "Message",
+        "MessageInput",
+        "201"
+      ],
+      [
+        "post",
+        "/messages/{id}/read",
+        "Marquer la lecture",
+        "ReadReceipt",
+        null,
+        "200"
+      ]
+    ],
+    "diagram": "07_Classes_communication",
+    "scope": "microservice_metier",
+    "businessNumber": 4
+  },
+  {
+    "key": "notification",
+    "name": "Notifications",
+    "owner": "Oussama",
+    "db": "notification",
+    "purpose": "Créer une boîte de réception par utilisateur, appliquer les préférences et relancer les envois courriel.",
+    "classes": [
+      [
+        "Notification",
+        [
+          "id: UUID",
+          "userId: UUID externe",
+          "eventId: UUID",
+          "type: String",
+          "readAt: Instant nullable"
+        ],
+        [
+          "markRead()"
+        ]
+      ],
+      [
+        "Preference",
+        [
+          "userId: UUID externe",
+          "emailEnabled: boolean",
+          "inAppEnabled: boolean"
+        ],
+        [
+          "update()"
+        ]
+      ],
+      [
+        "DeliveryAttempt",
+        [
+          "id: UUID",
+          "notificationId: UUID",
+          "attempt: int",
+          "status: DeliveryStatus",
+          "nextAttemptAt: Instant"
+        ],
+        [
+          "retry()"
+        ]
+      ],
+      [
+        "InboxEvent",
+        [
+          "consumer: String",
+          "eventId: UUID",
+          "processedAt: Instant"
+        ],
+        []
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        2,
+        "1",
+        "0..*"
+      ]
+    ],
+    "sync": "Le worker courriel récupère les coordonnées autorisées via une API interne limitée du socle Utilisateurs, puis contacte le fournisseur de messagerie.",
+    "event": "notification.email.requested.v1",
+    "consumer": "Worker courriel du même service",
+    "routes": [
+      [
+        "get",
+        "/notifications",
+        "Lire ma boîte de réception",
+        "NotificationPage",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/notifications/{id}/read",
+        "Marquer comme lue",
+        "Notification",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/notification-preferences",
+        "Lire mes préférences",
+        "Preference",
+        null,
+        "200"
+      ],
+      [
+        "patch",
+        "/notification-preferences",
+        "Modifier mes préférences",
+        "Preference",
+        "PreferenceInput",
+        "200"
+      ]
+    ],
+    "diagram": "08_Classes_notification",
+    "scope": "microservice_metier",
+    "businessNumber": 5
+  },
+  {
+    "key": "ai-matching",
+    "name": "Profil professionnel, CV et matching",
+    "owner": "Ayoub",
+    "db": "matching",
+    "purpose": "Gérer le profil professionnel, le CV et les recommandations. Le backend métier d’Ayoub conserve les profils, documents, versions et résultats; le moteur IA privé réalise uniquement des calculs à sa demande. Ayoub réalise aussi les écrans frontend liés à ce domaine.",
+    "classes": [
+      [
+        "ResumeDocument",
+        [
+          "id: UUID",
+          "ownerId: UUID externe",
+          "objectKey: String privé",
+          "mimeType: String",
+          "sizeBytes: long",
+          "version: int",
+          "status: ResumeStatus"
+        ],
+        [
+          "requestExtraction()",
+          "requestDeletion()"
+        ]
+      ],
+      [
+        "ExtractionJob",
+        [
+          "id: UUID",
+          "resumeId: UUID",
+          "status: JobStatus",
+          "extractorVersion: String"
+        ],
+        [
+          "extract()",
+          "retry()"
+        ]
+      ],
+      [
+        "ProfileSuggestion",
+        [
+          "id: UUID",
+          "jobId: UUID",
+          "fieldKey: String",
+          "value: JSON",
+          "confidence: Decimal",
+          "sourcePage: int nullable"
+        ],
+        []
+      ],
+      [
+        "MatchingJob",
+        [
+          "id: UUID",
+          "ownerId: UUID externe",
+          "profileVersion: long",
+          "status: JobStatus",
+          "modelVersion: String"
+        ],
+        [
+          "start()",
+          "complete()"
+        ]
+      ],
+      [
+        "MatchResult",
+        [
+          "id: UUID",
+          "jobId: UUID",
+          "projectId: UUID externe",
+          "projectVersion: long",
+          "profileVersion: long",
+          "score: Decimal",
+          "explanation: String"
+        ],
+        []
+      ],
+      [
+        "ModelVersion",
+        [
+          "id: String",
+          "algorithm: String",
+          "config: JSON"
+        ],
+        []
+      ],
+      [
+        "ProfessionalProfile",
+        [
+          "id: UUID",
+          "userId: UUID externe UNIQUE",
+          "headline: String",
+          "bio: String",
+          "availability: Availability",
+          "visibility: Visibility",
+          "version: long",
+          "sourceResumeId: UUID nullable"
+        ],
+        [
+          "edit()",
+          "confirmPrefill()",
+          "setVisibility()"
+        ]
+      ]
+    ],
+    "relations": [
+      [
+        0,
+        1,
+        "1",
+        "0..*"
+      ],
+      [
+        1,
+        2,
+        "1",
+        "0..*"
+      ],
+      [
+        3,
+        4,
+        "1",
+        "0..*"
+      ],
+      [
+        5,
+        3,
+        "1",
+        "0..*"
+      ]
+    ],
+    "sync": "Le backend lit les offres dans Catalog et vérifie le compte dans le socle commun. Son worker appelle le moteur IA privé par HTTP; l’IA renvoie un résultat au backend, qui le valide et le persiste.",
+    "event": "resume.uploaded.v1 / resume.parsed.v1 / profile.updated.v1 / ai.match.requested.v1 / ai.match.completed.v1",
+    "consumer": "Workers du service métier 6 et Notification",
+    "routes": [
+      [
+        "post",
+        "/matches",
+        "Demander une recommandation",
+        "MatchingJob",
+        "MatchInput",
+        "202"
+      ],
+      [
+        "get",
+        "/matching-jobs/{id}",
+        "Lire le statut de mon calcul",
+        "MatchingJob",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/matching-jobs/{id}/results",
+        "Lire les résultats terminés",
+        "MatchResultPage",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/matching-jobs/{id}/cancel",
+        "Annuler mon calcul",
+        "MatchingJob",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/resumes",
+        "Importer un CV privé et demander son extraction",
+        "ResumeDocument",
+        null,
+        "202"
+      ],
+      [
+        "get",
+        "/resumes/{id}",
+        "Consulter l’état de mon CV",
+        "ResumeDocument",
+        null,
+        "200"
+      ],
+      [
+        "delete",
+        "/resumes/{id}",
+        "Demander la suppression du CV et des extractions",
+        "ResumeDocument",
+        null,
+        "202"
+      ],
+      [
+        "get",
+        "/resumes/{id}/prefill",
+        "Lire les suggestions de mon CV",
+        "ResumePrefill",
+        null,
+        "200"
+      ],
+      [
+        "patch",
+        "/profiles/me",
+        "Modifier son profil",
+        "Profile",
+        "ProfileInput",
+        "200"
+      ],
+      [
+        "get",
+        "/profiles/me",
+        "Lire mon profil professionnel privé",
+        "Profile",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/profiles/{id}",
+        "Profil public minimisé",
+        "PublicProfile",
+        null,
+        "200"
+      ],
+      [
+        "get",
+        "/skills",
+        "Référentiel de compétences",
+        "SkillList",
+        null,
+        "200"
+      ],
+      [
+        "post",
+        "/profiles/me/resume-fill",
+        "Appliquer les champs du CV confirmés par l’utilisateur",
+        "Profile",
+        "ResumeFillInput",
+        "200"
+      ]
+    ],
+    "diagram": "09_Classes_ai-matching",
+    "scope": "microservice_metier",
+    "businessNumber": 6,
+    "profileClasses": [
+      [
+        "ProfessionalProfile",
+        [
+          "id: UUID",
+          "userId: UUID externe UNIQUE",
+          "headline: String",
+          "bio: String",
+          "availability: Availability",
+          "visibility: Visibility",
+          "version: long",
+          "sourceResumeId: UUID nullable"
+        ],
+        [
+          "edit()",
+          "confirmPrefill()",
+          "setVisibility()"
+        ]
+      ],
+      [
+        "Skill",
+        [
+          "code: String PK",
+          "label: String"
+        ],
+        []
+      ],
+      [
+        "ProfileSkill",
+        [
+          "profileId: UUID",
+          "skillCode: String",
+          "level: int déclaré"
+        ],
+        []
+      ],
+      [
+        "Experience",
+        [
+          "id: UUID",
+          "profileId: UUID",
+          "title: String",
+          "organization: String",
+          "description: String"
+        ],
+        []
+      ],
+      [
+        "Education",
+        [
+          "id: UUID",
+          "profileId: UUID",
+          "degree: String",
+          "institution: String"
+        ],
+        []
+      ],
+      [
+        "PortfolioItem",
+        [
+          "id: UUID",
+          "profileId: UUID",
+          "title: String",
+          "url: String",
+          "description: String"
+        ],
+        []
+      ]
+    ],
+    "runtime": "Java / Spring Boot — API et orchestration métier",
+    "aiIntegration": "Moteur Python/FastAPI privé, appelé uniquement par ce backend; jamais par le frontend ou la Gateway."
+  }
+]

@@ -1,0 +1,49 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Créer un brouillon
+POST {{baseUrl}}/projects
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Exemple de conception du profil Dabber Khdma",
+  "description": "Exemple de conception du profil Dabber Khdma",
+  "budgetMin": 1200,
+  "budgetMax": 1200,
+  "currency": "TND",
+  "skillCodes": [
+    "Exemple de conception du profil Dabber Khdma"
+  ]
+}
+
+### Rechercher les projets ouverts
+GET {{baseUrl}}/projects
+Authorization: Bearer {{token}}
+
+### Lire un projet visible
+GET {{baseUrl}}/projects/{{id}}
+Authorization: Bearer {{token}}
+
+### Publier son projet
+POST {{baseUrl}}/projects/{{id}}/publish
+Authorization: Bearer {{token}}
+
+### Annuler avant réservation
+POST {{baseUrl}}/projects/{{id}}/cancel
+Authorization: Bearer {{token}}
+
+### Réserver une attribution de manière idempotente
+POST {{baseUrl}}/internal/projects/{{id}}/award-reservations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "proposalId": "00000000-0000-4000-8000-000000000001",
+  "clientId": "00000000-0000-4000-8000-000000000001",
+  "freelancerId": "00000000-0000-4000-8000-000000000001",
+  "reservationKey": "00000000-0000-4000-8000-000000000001"
+}
+

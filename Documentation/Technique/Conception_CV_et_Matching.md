@@ -1,0 +1,32 @@
+# Profil professionnel, CV et matching
+
+## Microservice 6 Profil professionnel, CV et matching
+
+Responsable : Ayoub. Ce sixième microservice métier possède le profil professionnel, le CV et le matching. Son backend Spring Boot expose les API publiques et orchestre les traitements. Le moteur IA privé réalise uniquement les calculs commandés par ce backend.
+Données principales : ProfessionalProfile et ses compétences, expériences, formations, langues et portfolio; ResumeDocument, ExtractionJob et ProfileSuggestion; MatchingJob et MatchResult. Le compte d’authentification reste une référence externe au socle commun. Le profil est privé par défaut; sa publication exige une action explicite.
+Backend : contrôleurs REST, validation, droits de propriété, version du profil, persistance PostgreSQL, fichiers privés MinIO, outbox et workers RabbitMQ. Un AIClient privé encapsule les appels /v1/extract et /v1/score. Les résultats sont validés et versionnés avant toute utilisation métier.
+Frontend : import du CV, suivi du traitement, formulaire de profil et portfolio, relecture champ par champ des suggestions, prévisualisation du profil public, liste des offres recommandées et détail du score. Chaque écran appelle le backend métier par Gateway, jamais le moteur IA.
+Les routes /profiles/me, /profiles/{id}, /profiles/me/resume-fill et /skills appartiennent à ce backend; /resumes gère le CV; /matches crée un job et /matching-jobs expose le statut et les résultats. Le détail des entrées, sorties, erreurs et versions figure dans son contrat OpenAPI.
+La confirmation du CV vérifie localement propriétaire, état READY, extractionVersion et expectedProfileVersion. Les champs acceptés et l’outbox profile.updated.v1 sont commit dans la même transaction. Le CV ne peut modifier ni rôles ni coordonnées vérifiées. Le matching compare ensuite le profil confirmé aux offres ouvertes du Catalogue.
+
+## Import du CV et préremplissage confirmé
+
+Le frontend envoie un CV privé à POST /resumes sur le backend métier d’Ayoub via la Gateway. Les formats proposés sont PDF textuel et DOCX sans macros, pour 5 Mo maximum. Le backend contrôle le propriétaire, le type réel, la taille et la sécurité du document, le place en quarantaine et n’autorise le calcul qu’après un contrôle réussi.
+Le backend conserve ResumeDocument et une outbox resume.uploaded.v1 puis retourne 202 avec Location. Son worker backend récupère le fichier depuis MinIO et appelle le moteur IA privé avec les octets autorisés et un identifiant de calcul. Le moteur retourne des suggestions et une version d’extracteur au backend; il ne contacte pas le navigateur et ne persiste pas le profil.
+Le backend valide les champs autorisés, leur format, le document et la version, persiste ProfileSuggestion puis passe le document READY et émet resume.parsed.v1. Le frontend lit l’état et les suggestions via ce même backend.
+L’utilisateur peut corriger et confirmer le nom affiché, le titre professionnel, la biographie, les compétences, expériences, formations, langues et éléments de portfolio autorisés. POST /profiles/me/resume-fill porte resumeId, extractionVersion, expectedProfileVersion et confirmedFields. Le backend contrôle ces données dans sa base locale et n’applique que les champs confirmés. Un conflit retourne 409 sans écraser la modification concurrente.
+Un PDF scanné sans texte, protégé ou inexploitable produit une erreur claire et propose la saisie manuelle. Aucune extraction ne modifie rôle, mot de passe, contact vérifié ou réputation. Le CV est traité comme des données, sans exécuter ses instructions ni suivre ses liens.
+La suppression passe DELETION_PENDING puis DELETED après effacement du fichier, des extractions et suggestions. Un worker tardif ne peut réintroduire ces données. Le profil déjà confirmé reste modifiable par l’utilisateur. La politique de conservation proposée reste de supprimer après 30 jours les imports non confirmés; elle doit être validée par l’équipe avant mise en production.
+
+## États et reprise du traitement du CV
+
+Cycle prévu : UPLOADED puis SCANNING, QUEUED, EXTRACTING et READY. Une vérification ou extraction en échec produit FAILED avec un motif compréhensible; une relance explicite conserve l’historique de version. DELETION_PENDING bloque toute nouvelle extraction et DELETED constitue la fin du cycle.
+Les écritures de résultat vérifient la version et le statut courant. Un worker tardif ne peut remettre un document supprimé en READY. Les clés d’idempotence et l’inbox dédupliquent les jobs. Un message en erreur suit les reprises bornées et la DLQ. Le suivi distingue le statut du document, le statut du job et le fait que le profil ait réellement été confirmé.
+
+## Matching explicable et autonomie du parcours
+
+Le frontend demande des recommandations par POST /matches au backend d’Ayoub. Le backend lit son propre profil professionnel confirmé et sa version, puis récupère les offres ouvertes du Catalogue par REST. Il crée MatchingJob et sa tâche durable avant de retourner 202.
+Le worker backend transmet au moteur IA privé uniquement les compétences confirmées et les exigences des offres. Le moteur calcule les scores et renvoie des compétences communes/manquantes au backend. Il n’a aucun accès direct aux utilisateurs, au frontend ou aux bases métier. Le backend valide les identifiants d’offres et les scores, construit les explications et persiste MatchResult avec profileVersion, projectVersion et modelVersion.
+La baseline est une couverture pondérée des compétences requises, entre 0 et 1. Un profil sans compétence confirmée doit être complété plutôt que recevoir un score artificiel. Le budget reste un filtre de recherche tant qu’un tarif fiable n’existe pas. Les informations sensibles comme photo, date de naissance et situation familiale sont exclues du calcul.
+Le frontend lit le statut et les résultats via /matching-jobs/{id}; il montre l’offre, les raisons, les compétences manquantes et la fraîcheur du résultat. Un résultat dépassé par une nouvelle version du profil est signalé comme obsolète et peut être recalculé. La recherche et la candidature restent possibles si le moteur IA est indisponible.
+Un projectId optionnel limite le calcul à une offre précise; sans ce filtre, le backend recommande des offres ouvertes au profil connecté. Une panne du moteur est traitée par les reprises du worker backend et ne fait jamais apparaître une URL privée d’IA dans l’interface.

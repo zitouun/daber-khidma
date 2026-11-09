@@ -1,0 +1,26 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Lister mes conversations
+GET {{baseUrl}}/conversations
+Authorization: Bearer {{token}}
+
+### Historique paginé
+GET {{baseUrl}}/conversations/{{id}}/messages
+Authorization: Bearer {{token}}
+
+### Envoyer un message
+POST {{baseUrl}}/conversations/{{id}}/messages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "body": "Exemple de conception du profil Dabber Khdma"
+}
+
+### Marquer la lecture
+POST {{baseUrl}}/messages/{{id}}/read
+Authorization: Bearer {{token}}
+

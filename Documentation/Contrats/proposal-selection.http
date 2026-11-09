@@ -1,0 +1,37 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Déposer une proposition
+POST {{baseUrl}}/projects/{{id}}/proposals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 1200,
+  "currency": "TND",
+  "coverLetter": "Exemple de conception du profil Dabber Khdma"
+}
+
+### Consulter les propositions autorisées
+GET {{baseUrl}}/projects/{{id}}/proposals
+Authorization: Bearer {{token}}
+
+### Présélectionner
+POST {{baseUrl}}/proposals/{{id}}/shortlist
+Authorization: Bearer {{token}}
+
+### Retirer sa proposition
+POST {{baseUrl}}/proposals/{{id}}/withdraw
+Authorization: Bearer {{token}}
+
+### Lancer une attribution idempotente
+POST {{baseUrl}}/proposals/{{id}}/accept
+Authorization: Bearer {{token}}
+Idempotency-Key: 00000000-0000-4000-8000-000000000001
+
+### Suivre la création du contrat
+GET {{baseUrl}}/selections/{{id}}
+Authorization: Bearer {{token}}
+

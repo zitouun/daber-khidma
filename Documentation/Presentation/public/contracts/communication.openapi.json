@@ -1,0 +1,2217 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Dabber Khdma — Communication",
+    "version": "1.2.0",
+    "description": "Contrat de conception semaine 4; implémentation à réaliser."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1",
+      "description": "Gateway prévue en développement"
+    }
+  ],
+  "paths": {
+    "/conversations": {
+      "get": {
+        "operationId": "communication_get_conversations",
+        "summary": "Lister mes conversations",
+        "description": "Conserver les conversations et messages, vérifier les participants, limiter les abus et référencer les fichiers.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lister mes conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationPage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "00000000-0000-4000-8000-000000000001",
+                      "contractId": "00000000-0000-4000-8000-000000000001",
+                      "participantIds": [
+                        "00000000-0000-4000-8000-000000000001",
+                        "00000000-0000-4000-8000-000000000001"
+                      ]
+                    }
+                  ],
+                  "page": 1,
+                  "size": 1,
+                  "total": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrée invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent ou invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle ou propriétaire non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource absente ou masquée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit de concurrence ou clé réutilisée avec une autre charge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Transition métier ou état invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dépendance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/conversations/{id}/messages": {
+      "get": {
+        "operationId": "communication_get_conversations_id_messages",
+        "summary": "Historique paginé",
+        "description": "Conserver les conversations et messages, vérifier les participants, limiter les abus et référencer les fichiers.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique paginé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagePage"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "00000000-0000-4000-8000-000000000001",
+                      "conversationId": "00000000-0000-4000-8000-000000000001",
+                      "senderId": "00000000-0000-4000-8000-000000000001",
+                      "body": "Exemple de conception du profil Dabber Khdma",
+                      "createdAt": "2026-11-09T12:00:00Z"
+                    }
+                  ],
+                  "page": 1,
+                  "size": 1,
+                  "total": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrée invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent ou invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle ou propriétaire non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource absente ou masquée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit de concurrence ou clé réutilisée avec une autre charge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Transition métier ou état invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dépendance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "communication_post_conversations_id_messages",
+        "summary": "Envoyer un message",
+        "description": "Conserver les conversations et messages, vérifier les participants, limiter les abus et référencer les fichiers.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Envoyer un message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "conversationId": "00000000-0000-4000-8000-000000000001",
+                  "senderId": "00000000-0000-4000-8000-000000000001",
+                  "body": "Exemple de conception du profil Dabber Khdma",
+                  "createdAt": "2026-11-09T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrée invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent ou invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle ou propriétaire non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource absente ou masquée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit de concurrence ou clé réutilisée avec une autre charge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Transition métier ou état invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dépendance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageInput"
+              },
+              "example": {
+                "body": "Exemple de conception du profil Dabber Khdma"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/{id}/read": {
+      "post": {
+        "operationId": "communication_post_messages_id_read",
+        "summary": "Marquer la lecture",
+        "description": "Conserver les conversations et messages, vérifier les participants, limiter les abus et référencer les fichiers.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Marquer la lecture",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadReceipt"
+                },
+                "example": {
+                  "messageId": "00000000-0000-4000-8000-000000000001",
+                  "userId": "00000000-0000-4000-8000-000000000001",
+                  "readAt": "2026-11-09T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrée invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent ou invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle ou propriétaire non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource absente ou masquée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit de concurrence ou clé réutilisée avec une autre charge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Transition métier ou état invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dépendance indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "Exemple de conception du profil Dabber Khdma",
+                  "message": "Exemple de conception du profil Dabber Khdma",
+                  "traceId": "Exemple de conception du profil Dabber Khdma"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "traceId"
+        ]
+      },
+      "ProfileInput": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "skillCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "headline": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "BUSY",
+              "UNAVAILABLE"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PRIVATE",
+              "PUBLIC"
+            ]
+          },
+          "portfolio": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortfolioItem"
+            },
+            "maxItems": 20
+          },
+          "experience": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Experience"
+            },
+            "maxItems": 30
+          },
+          "education": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Education"
+            },
+            "maxItems": 30
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20
+          },
+          "expectedProfileVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "expectedProfileVersion"
+        ],
+        "minProperties": 2
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "skillCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "experience": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Experience"
+            }
+          },
+          "education": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Education"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "headline": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "BUSY",
+              "UNAVAILABLE"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PRIVATE",
+              "PUBLIC"
+            ]
+          },
+          "portfolio": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortfolioItem"
+            },
+            "maxItems": 20
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "displayName"
+        ]
+      },
+      "PublicProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "skillCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "experience": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Experience"
+            }
+          },
+          "education": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Education"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "headline": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "BUSY",
+              "UNAVAILABLE"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PRIVATE",
+              "PUBLIC"
+            ]
+          },
+          "portfolio": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortfolioItem"
+            },
+            "maxItems": 20
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "displayName"
+        ]
+      },
+      "Skill": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label"
+        ]
+      },
+      "ProjectInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 10000
+          },
+          "budgetMin": {
+            "type": "number",
+            "minimum": 0
+          },
+          "budgetMax": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "skillCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "description",
+          "budgetMin",
+          "budgetMax",
+          "currency",
+          "skillCodes"
+        ]
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "budgetMin": {
+            "type": "number",
+            "minimum": 0
+          },
+          "budgetMax": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "OPEN",
+              "AWARD_PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "clientId",
+          "title",
+          "status",
+          "version"
+        ]
+      },
+      "ReservationInput": {
+        "type": "object",
+        "properties": {
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "freelancerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationKey": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "proposalId",
+          "clientId",
+          "freelancerId",
+          "reservationKey"
+        ]
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RESERVED",
+              "CONFIRMED"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "projectId",
+          "proposalId",
+          "reservationKey",
+          "status"
+        ]
+      },
+      "ProposalInput": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "coverLetter": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 5000
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "amount",
+          "currency",
+          "coverLetter"
+        ]
+      },
+      "Proposal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "freelancerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUBMITTED",
+              "SHORTLISTED",
+              "ACCEPTED",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "projectId",
+          "freelancerId",
+          "status"
+        ]
+      },
+      "Selection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_CONTRACT",
+              "ACTIVE",
+              "REQUIRES_RECONCILIATION"
+            ]
+          },
+          "contractId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "projectId",
+          "proposalId",
+          "status"
+        ]
+      },
+      "Contract": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "freelancerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "COMPLETED",
+              "DISPUTED",
+              "TERMINATED"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "projectId",
+          "proposalId",
+          "clientId",
+          "freelancerId",
+          "status"
+        ]
+      },
+      "MilestoneInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "amount",
+          "currency"
+        ]
+      },
+      "Milestone": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contractId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "IN_PROGRESS",
+              "SUBMITTED",
+              "REVISION_REQUESTED",
+              "APPROVED"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contractId",
+          "title",
+          "status"
+        ]
+      },
+      "DeliverableInput": {
+        "type": "object",
+        "properties": {
+          "objectKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "objectKey",
+          "revision"
+        ]
+      },
+      "ReasonInput": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "reason"
+        ]
+      },
+      "Dispute": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contractId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "RESOLVED"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contractId",
+          "status",
+          "reason"
+        ]
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contractId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "participantIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 2
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contractId",
+          "participantIds"
+        ]
+      },
+      "MessageInput": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "body"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "conversationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "senderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "conversationId",
+          "senderId",
+          "body",
+          "createdAt"
+        ]
+      },
+      "ReadReceipt": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "userId",
+          "readAt"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resourceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "userId",
+          "type"
+        ]
+      },
+      "PreferenceInput": {
+        "type": "object",
+        "properties": {
+          "emailEnabled": {
+            "type": "boolean"
+          },
+          "inAppEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "emailEnabled",
+          "inAppEnabled"
+        ]
+      },
+      "Preference": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "emailEnabled": {
+            "type": "boolean"
+          },
+          "inAppEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "userId",
+          "emailEnabled",
+          "inAppEnabled"
+        ]
+      },
+      "MatchInput": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optionnel : limiter le calcul à une offre. Sans ce filtre, recommander les offres ouvertes au profil de l’utilisateur connecté."
+          }
+        },
+        "additionalProperties": false
+      },
+      "MatchingJob": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED",
+              "CANCELLED"
+            ]
+          },
+          "modelVersion": {
+            "type": "string"
+          },
+          "profileVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "ownerId",
+          "status",
+          "profileVersion",
+          "modelVersion"
+        ]
+      },
+      "MatchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "projectVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "profileVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "projectId",
+          "projectVersion",
+          "profileVersion",
+          "score",
+          "explanation"
+        ]
+      },
+      "ProjectPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Project"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "ProposalPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Proposal"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "ConversationPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conversation"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "MessagePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "NotificationPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "MatchResultPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchResult"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "page",
+          "size",
+          "total"
+        ]
+      },
+      "SkillList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Skill"
+        }
+      },
+      "ResumeDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mimeType": {
+            "type": "string",
+            "enum": [
+              "application/pdf",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ]
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5242880
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "UPLOADED",
+              "SCANNING",
+              "QUEUED",
+              "EXTRACTING",
+              "READY",
+              "FAILED",
+              "DELETION_PENDING",
+              "DELETED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "ownerId",
+          "version",
+          "mimeType",
+          "sizeBytes",
+          "status"
+        ]
+      },
+      "ProfileSuggestion": {
+        "type": "object",
+        "properties": {
+          "fieldKey": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "bio",
+              "skillCodes",
+              "experience",
+              "education",
+              "languages"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 6000
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "sourcePage": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "fieldKey",
+          "value",
+          "confidence"
+        ]
+      },
+      "ResumePrefill": {
+        "type": "object",
+        "properties": {
+          "resumeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "extractionVersion": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY"
+            ]
+          },
+          "suggestions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileSuggestion"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "resumeId",
+          "ownerId",
+          "extractionVersion",
+          "status",
+          "suggestions"
+        ]
+      },
+      "Experience": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "organization": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ]
+      },
+      "Education": {
+        "type": "object",
+        "properties": {
+          "degree": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "institution": {
+            "type": "string",
+            "maxLength": 160
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "degree"
+        ]
+      },
+      "ResumeFillInput": {
+        "type": "object",
+        "properties": {
+          "resumeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "extractionVersion": {
+            "type": "string"
+          },
+          "expectedProfileVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confirmedFields": {
+            "type": "object",
+            "properties": {
+              "displayName": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+              },
+              "bio": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "skillCodes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50
+              },
+              "experience": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Experience"
+                },
+                "maxItems": 30
+              },
+              "education": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Education"
+                },
+                "maxItems": 30
+              },
+              "languages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 20
+              },
+              "headline": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "AVAILABLE",
+                  "BUSY",
+                  "UNAVAILABLE"
+                ]
+              },
+              "portfolio": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PortfolioItem"
+                },
+                "maxItems": 20
+              }
+            },
+            "additionalProperties": false,
+            "minProperties": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "resumeId",
+          "extractionVersion",
+          "expectedProfileVersion",
+          "confirmedFields"
+        ]
+      },
+      "DeliveryContact": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "userId",
+          "email",
+          "emailVerified"
+        ]
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CLIENT",
+                "FREELANCER",
+                "ADMIN"
+              ]
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "SUSPENDED"
+            ]
+          },
+          "emailVerified": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "handle",
+          "roles",
+          "status",
+          "emailVerified"
+        ]
+      },
+      "AccountInput": {
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 60
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "handle"
+        ]
+      },
+      "PortfolioItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 1000
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "url"
+        ]
+      }
+    }
+  }
+}

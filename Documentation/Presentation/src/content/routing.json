@@ -1,0 +1,332 @@
+[
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "profile.updated.v1",
+    "producer": "ai-matching",
+    "queue": "ai-matching.profile.updated.v1",
+    "consumer": "ai-matching",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "ai-matching.profile.updated.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "project.published.v1",
+    "producer": "project-catalog",
+    "queue": "ai-matching.project.published.v1",
+    "consumer": "ai-matching",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "ai-matching.project.published.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "project.published.v1",
+    "producer": "project-catalog",
+    "queue": "notification.project.published.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.project.published.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "proposal.submitted.v1",
+    "producer": "proposal-selection",
+    "queue": "notification.proposal.submitted.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.proposal.submitted.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "proposal.accepted.v1",
+    "producer": "proposal-selection",
+    "queue": "engagement.proposal.accepted.v1",
+    "consumer": "engagement",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "engagement.proposal.accepted.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.created.v1",
+    "producer": "engagement",
+    "queue": "project-catalog.contract.created.v1",
+    "consumer": "project-catalog",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "project-catalog.contract.created.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.created.v1",
+    "producer": "engagement",
+    "queue": "proposal-selection.contract.created.v1",
+    "consumer": "proposal-selection",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "proposal-selection.contract.created.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.created.v1",
+    "producer": "engagement",
+    "queue": "communication.contract.created.v1",
+    "consumer": "communication",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "communication.contract.created.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.created.v1",
+    "producer": "engagement",
+    "queue": "notification.contract.created.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.contract.created.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.completed.v1",
+    "producer": "engagement",
+    "queue": "project-catalog.contract.completed.v1",
+    "consumer": "project-catalog",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "project-catalog.contract.completed.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "contract.completed.v1",
+    "producer": "engagement",
+    "queue": "notification.contract.completed.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.contract.completed.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "milestone.submitted.v1",
+    "producer": "engagement",
+    "queue": "notification.milestone.submitted.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.milestone.submitted.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "milestone.approved.v1",
+    "producer": "engagement",
+    "queue": "notification.milestone.approved.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.milestone.approved.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "message.sent.v1",
+    "producer": "communication",
+    "queue": "notification.message.sent.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.message.sent.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "ai.match.requested.v1",
+    "producer": "ai-matching",
+    "queue": "talent-matching-worker.ai.match.requested.v1",
+    "consumer": "talent-matching-worker",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "talent-matching-worker.ai.match.requested.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "ai.match.completed.v1",
+    "producer": "ai-matching",
+    "queue": "notification.ai.match.completed.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.ai.match.completed.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "notification.email.requested.v1",
+    "producer": "notification",
+    "queue": "email-worker.notification.email.requested.v1",
+    "consumer": "email-worker",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "email-worker.notification.email.requested.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "resume.uploaded.v1",
+    "producer": "ai-matching",
+    "queue": "talent-extraction-worker.resume.uploaded.v1",
+    "consumer": "talent-extraction-worker",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "talent-extraction-worker.resume.uploaded.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "resume.parsed.v1",
+    "producer": "ai-matching",
+    "queue": "notification.resume.parsed.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.resume.parsed.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "resume.deleted.v1",
+    "producer": "ai-matching",
+    "queue": "ai-matching.resume.deleted.v1",
+    "consumer": "ai-matching",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "ai-matching.resume.deleted.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "account.updated.v1",
+    "producer": "identity-profile",
+    "queue": "ai-matching.account.updated.v1",
+    "consumer": "ai-matching",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "ai-matching.account.updated.v1.dlq"
+  },
+  {
+    "exchange": "dabber-khdma.events",
+    "exchangeType": "topic",
+    "routingKey": "account.updated.v1",
+    "producer": "identity-profile",
+    "queue": "notification.account.updated.v1",
+    "consumer": "notification",
+    "retrySeconds": [
+      5,
+      30,
+      120
+    ],
+    "maxAttempts": 4,
+    "deadLetterQueue": "notification.account.updated.v1.dlq"
+  }
+]

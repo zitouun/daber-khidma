@@ -1,0 +1,88 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Demander une recommandation
+POST {{baseUrl}}/matches
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Lire le statut de mon calcul
+GET {{baseUrl}}/matching-jobs/{{id}}
+Authorization: Bearer {{token}}
+
+### Lire les résultats terminés
+GET {{baseUrl}}/matching-jobs/{{id}}/results
+Authorization: Bearer {{token}}
+
+### Annuler mon calcul
+POST {{baseUrl}}/matching-jobs/{{id}}/cancel
+Authorization: Bearer {{token}}
+
+### Importer un CV privé et demander son extraction
+POST {{baseUrl}}/resumes
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=CV
+
+--CV
+Content-Disposition: form-data; name="file"; filename="mon-cv.pdf"
+Content-Type: application/pdf
+
+< ./mon-cv.pdf
+--CV--
+
+### Consulter l’état de mon CV
+GET {{baseUrl}}/resumes/{{id}}
+Authorization: Bearer {{token}}
+
+### Demander la suppression du CV et des extractions
+DELETE {{baseUrl}}/resumes/{{id}}
+Authorization: Bearer {{token}}
+
+### Lire les suggestions de mon CV
+GET {{baseUrl}}/resumes/{{id}}/prefill
+Authorization: Bearer {{token}}
+
+### Modifier son profil
+PATCH {{baseUrl}}/profiles/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "expectedProfileVersion": 1,
+  "displayName": "Exemple de conception du profil Dabber Khdma"
+}
+
+### Lire mon profil professionnel privé
+GET {{baseUrl}}/profiles/me
+Authorization: Bearer {{token}}
+
+### Profil public minimisé
+GET {{baseUrl}}/profiles/{{id}}
+Authorization: Bearer {{token}}
+
+### Référentiel de compétences
+GET {{baseUrl}}/skills
+Authorization: Bearer {{token}}
+
+### Appliquer les champs du CV confirmés par l’utilisateur
+POST {{baseUrl}}/profiles/me/resume-fill
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "resumeId": "00000000-0000-4000-8000-000000000001",
+  "extractionVersion": "Exemple de conception du profil Dabber Khdma",
+  "expectedProfileVersion": 1,
+  "confirmedFields": {
+    "headline": "Développeur web",
+    "skillCodes": [
+      "Java",
+      "TypeScript"
+    ]
+  }
+}
+

@@ -1,0 +1,56 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Lire son contrat
+GET {{baseUrl}}/contracts/{{id}}
+Authorization: Bearer {{token}}
+
+### Créer un jalon
+POST {{baseUrl}}/contracts/{{id}}/milestones
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Exemple de conception du profil Dabber Khdma",
+  "amount": 1200,
+  "currency": "TND"
+}
+
+### Soumettre les métadonnées du livrable
+POST {{baseUrl}}/milestones/{{id}}/submit
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "objectKey": "Exemple de conception du profil Dabber Khdma",
+  "revision": 1
+}
+
+### Approuver un livrable
+POST {{baseUrl}}/milestones/{{id}}/approve
+Authorization: Bearer {{token}}
+
+### Demander une révision
+POST {{baseUrl}}/milestones/{{id}}/request-revision
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Exemple de conception du profil Dabber Khdma"
+}
+
+### Ouvrir un litige
+POST {{baseUrl}}/contracts/{{id}}/disputes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Exemple de conception du profil Dabber Khdma"
+}
+
+### Démarrer un jalon planifié
+POST {{baseUrl}}/milestones/{{id}}/start
+Authorization: Bearer {{token}}
+

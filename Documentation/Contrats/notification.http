@@ -1,0 +1,27 @@
+# Contrats de conception — serveur non implémenté
+@baseUrl = http://localhost:8080/api/v1
+@token = JETON_A_REMPLACER
+@id = 00000000-0000-4000-8000-000000000001
+
+### Lire ma boîte de réception
+GET {{baseUrl}}/notifications
+Authorization: Bearer {{token}}
+
+### Marquer comme lue
+POST {{baseUrl}}/notifications/{{id}}/read
+Authorization: Bearer {{token}}
+
+### Lire mes préférences
+GET {{baseUrl}}/notification-preferences
+Authorization: Bearer {{token}}
+
+### Modifier mes préférences
+PATCH {{baseUrl}}/notification-preferences
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "emailEnabled": true,
+  "inAppEnabled": true
+}
+
