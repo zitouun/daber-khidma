@@ -1,8 +1,8 @@
 # Dabber Khdma — validation intermédiaire AWD, semaine 4
 
 Classe : SSA 9. Équipe : Rayen, Rana, Yassin, Farah, Oussama et Ayoub.
-Groupe : **À RENSEIGNER**. Date : **À RENSEIGNER**.
-Dépôt Git public : **À RENSEIGNER**. Enseignant collaborateur : **À VÉRIFIER**.
+Groupe : **papillon**. Date : **9/11/2026**.
+Dépôt Git public : **https://github.com/zitouun/daber-khidma**. Enseignant collaborateur : **ABDERAHMEN BEN AROUS**.
 
 ## Structure de remise
 
